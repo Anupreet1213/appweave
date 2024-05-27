@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import { Content } from "antd/es/layout/layout";
 import Card from "./Card";
 import { setSearchText } from "../lib/searchTextSlice";
+// import { useEffect } from "react";
 
 // Interface for HomeProps (optional but improves readability)
 // interface HomeProps {
@@ -34,6 +35,7 @@ import { setSearchText } from "../lib/searchTextSlice";
 
 const Home = () => {
   const data = useSelector((store: RootState) => store.data);
+
   const searchTextData = useSelector((store: RootState) => store.searchText);
   const selectedColorCheckBox: string[] = useSelector(
     (store: RootState) => store.checkBox.selectedColorCheckBox
@@ -61,52 +63,60 @@ const Home = () => {
           onChange={handleChange}
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-20 gap-y-10">
-          {data?.map((eachItem) => {
-            const eachItemData = {
-              name: eachItem.name,
-              price: eachItem.price,
-              color: eachItem.color,
-              image: eachItem.image,
-              quantity: 1,
-            };
-
-            // Combine all filtering conditions using logical AND (&&)
-            const shouldRender =
-              (searchTextData.searchText.toLowerCase() === "" || // Include all items if search is empty
+          {data
+            ?.filter(
+              (eachItem) =>
+                (selectedColorCheckBox.length === 0 ||
+                  selectedColorCheckBox.includes(eachItem.color)) &&
+                (selectedGenderCheckBox.length === 0 ||
+                  selectedGenderCheckBox.includes(eachItem.gender)) &&
                 eachItem.name
                   .toLowerCase()
-                  .includes(searchTextData.searchText.toLowerCase()) ||
-                eachItem.price
-                  .toString()
-                  .toLowerCase()
-                  .includes(searchTextData.searchText.toLowerCase()) ||
-                eachItem.color
-                  .toLowerCase()
-                  .includes(searchTextData.searchText.toLowerCase())) ||
-                eachItem.gender
-                  .toLowerCase()
                   .includes(searchTextData.searchText.toLowerCase())
-                  &&
-              (selectedColorCheckBox.length === 0 || // Include all if no color filter is applied
-                selectedColorCheckBox.some(
-                  (color) =>
-                    color.toLowerCase() === eachItem.color.toLowerCase()
-                )) &&
-              (selectedGenderCheckBox.length === 0 || // Include all if no color filter is applied
-                selectedGenderCheckBox.some(
-                  (gender) =>
-                    gender.toLowerCase() === eachItem.gender.toLowerCase()
-                ));
-            // (selectedPriceCheckBox.length === 0 || // Include all if no price filter is applied
-            //   selectedPriceCheckBox.some((priceRange) => {
-            //     // Implement price range filtering logic here (e.g., check if item price falls within the range)
-            //     return /* price range filtering condition */;
-            //   }));
+            )
+            ?.map((eachItem) => {
+              const eachItemData = {
+                name: eachItem.name,
+                price: eachItem.price,
+                color: eachItem.color,
+                image: eachItem.image,
+                quantity: 1,
+              };
 
-            return shouldRender ? (
-              <Card key={eachItem.id} eachItem={eachItemData} />
-            ) : null;
-          })}
+              // Combine all filtering conditions using logical AND (&&)
+              // const shouldRender =
+              //   searchTextData.searchText.toLowerCase() === "" || // Include all items if search is empty
+              //   eachItem.name
+              //     .toLowerCase()
+              //     .includes(searchTextData.searchText.toLowerCase()) ||
+              //   eachItem.price
+              //     .toString()
+              //     .toLowerCase()
+              //     .includes(searchTextData.searchText.toLowerCase()) ||
+              //   eachItem.color
+              //     .toLowerCase()
+              //     .includes(searchTextData.searchText.toLowerCase()) ||
+              //   (eachItem.gender
+              //     .toLowerCase()
+              //     .includes(searchTextData.searchText.toLowerCase()) &&
+              //     (selectedColorCheckBox.length === 0 || // Include all if no color filter is applied
+              //       selectedColorCheckBox.some(
+              //         (color) =>
+              //           color.toLowerCase() === eachItem.color.toLowerCase()
+              //       )) &&
+              //     (selectedGenderCheckBox.length === 0 || // Include all if no color filter is applied
+              //       selectedGenderCheckBox.some(
+              //         (gender) =>
+              //           gender.toLowerCase() === eachItem.gender.toLowerCase()
+              //       )));
+              // (selectedPriceCheckBox.length === 0 || // Include all if no price filter is applied
+              //   selectedPriceCheckBox.some((priceRange) => {
+              //     // Implement price range filtering logic here (e.g., check if item price falls within the range)
+              //     return /* price range filtering condition */;
+              //   }));
+
+              return <Card key={eachItem.id} eachItem={eachItemData} />;
+            })}
         </div>
       </Content>
     </Layout>
